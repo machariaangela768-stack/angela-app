@@ -1,0 +1,1100 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#150C14">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Angela">
+<link rel="manifest" href="angela-manifest.json">
+<link rel="icon" type="image/png" href="angela-icon-192.png">
+<link rel="apple-touch-icon" href="angela-icon-192.png">
+<style>html{background:#150C14}body{margin:0}</style>
+<title>Angela's Content Tracker</title>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,600;0,700;1,600;1,700&family=DM+Sans:wght@400;500;700&family=Dancing+Script:wght@600;700&family=Caveat:wght@500;700&display=swap">
+<style>
+/* Layout: dark, soft, feminine single column for a phone. Greeting, day check-in (place, mood, weather), today's pick with platform hearts, ideas, reminders, ways to post, log form for several platforms, week strip with day picker and platform comparison, advice, post history. */
+:root{
+  --bg:#150C14;
+  --surface:#211321;
+  --surface2:#2B1A2B;
+  --fg:#F4E9EF;
+  --muted:#BCA3B4;
+  --line:#3D2739;
+  --accent:#E6A3BA;
+  --accent-ink:#2B0F1E;
+  --gold:#D9BA8C;
+  --wine:#6E2445;
+  --warn:#F2917F;
+  --display:"Cormorant Garamond",Georgia,"Times New Roman",serif;
+  --body:"DM Sans",system-ui,-apple-system,"Segoe UI",sans-serif;
+  --script:"Dancing Script","Segoe Script","Brush Script MT",cursive;
+  --hand:"Caveat","Segoe Print","Bradley Hand",cursive;
+  color-scheme:dark;
+}
+*{box-sizing:border-box}
+body{
+  background:
+    radial-gradient(800px 460px at 90% -8%,rgba(150,55,100,.32),transparent 62%),
+    radial-gradient(640px 420px at -12% 34%,rgba(95,35,75,.38),transparent 62%),
+    var(--bg);
+  background-color:var(--bg);
+  color:var(--fg);font-family:var(--body);font-size:16px;line-height:1.5;
+  padding-block:22px 64px;
+  padding-left:max(16px,env(safe-area-inset-left,0px));
+  padding-right:max(16px,env(safe-area-inset-right,0px));
+}
+main{max-width:720px;margin:0 auto;display:flex;flex-direction:column;gap:40px}
+h1,h2,h3{font-family:var(--display);line-height:1.15;margin:0;text-wrap:balance;font-weight:700}
+h1{font-family:var(--script);font-weight:700;font-size:clamp(2.4rem,11vw,3.4rem);line-height:1.15;color:var(--accent)}
+h2{font-family:var(--script);font-weight:700;font-size:1.85rem;line-height:1.2;color:var(--fg)}
+h3{font-size:1.25rem}
+p{margin:0}
+.eyebrow{font-size:.74rem;letter-spacing:.16em;text-transform:uppercase;color:var(--gold);font-weight:700}
+.muted{color:var(--muted)}
+section{display:flex;flex-direction:column;gap:14px;min-width:0}
+.sec-head{display:flex;flex-direction:column;gap:4px}
+.sec-head h2::after{content:"";display:block;width:44px;height:1px;background:var(--gold);margin-top:8px}
+.ic{display:block;flex:none}
+
+.hero{display:flex;flex-direction:column;gap:12px}
+.hero-top{display:flex;align-items:center;gap:10px;color:var(--gold)}
+.cheer{font-family:var(--hand);font-weight:700;font-size:1.6rem;line-height:1.25;max-width:26em}
+.daily{font-family:var(--hand);font-weight:500;font-size:1.35rem;line-height:1.3;border:1px dashed var(--gold);background:var(--surface);padding:12px 16px;border-radius:16px;max-width:30em;color:var(--gold)}
+.streak{display:flex;flex-wrap:wrap;align-items:center;gap:4px 10px;font-family:var(--hand);font-weight:700;font-size:1.4rem;color:var(--accent)}
+.streak .small{font-weight:500;color:var(--muted);font-size:1.2rem}
+.net{font-size:.9rem;color:var(--gold);border:1px dashed var(--gold);border-radius:10px;padding:8px 12px}
+
+.chips{display:flex;flex-wrap:wrap;gap:8px}
+.chip{font:inherit;font-weight:500;border:1px solid var(--line);background:var(--surface);color:var(--fg);padding:9px 15px;border-radius:999px;cursor:pointer}
+.chip[aria-pressed="true"]{background:var(--accent);border-color:var(--accent);color:var(--accent-ink);font-weight:700}
+button:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-visible,summary:focus-visible{outline:2px solid var(--gold);outline-offset:3px}
+
+.panel{background:var(--surface);border:1px solid var(--line);border-radius:18px;padding:18px;display:grid;gap:18px;min-width:0}
+.sub{font-size:.78rem;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);font-weight:700}
+.pick{display:flex;flex-wrap:wrap;gap:10px}
+.pbtn{font:inherit;display:flex;flex-direction:column;align-items:center;gap:5px;width:70px;padding:10px 4px;border:1px solid var(--line);border-radius:16px;background:var(--surface2);color:var(--muted);cursor:pointer;font-size:.74rem}
+.pbtn[aria-pressed="true"]{color:var(--accent);border-color:var(--accent);background:var(--wine);box-shadow:0 0 0 1px var(--accent),0 0 18px rgba(230,163,186,.28)}
+.chosen{display:flex;align-items:center;gap:8px;font-family:var(--hand);font-weight:700;font-size:1.4rem;color:var(--accent);min-height:1.6em;margin-top:8px}
+.dayback{display:flex;flex-wrap:wrap;gap:10px;align-items:center}
+
+.pickcard{background:linear-gradient(140deg,var(--wine),var(--surface) 72%);border:1px solid var(--line);border-radius:22px;padding:20px;display:flex;gap:14px;align-items:flex-start;justify-content:space-between}
+.pickcard>div{min-width:0;display:flex;flex-direction:column;gap:8px}
+.pickcard h3{font-family:var(--script);font-weight:700;font-size:clamp(1.8rem,8vw,2.4rem);line-height:1.2;color:var(--accent)}
+.ctx{font-family:var(--hand);font-weight:500;font-size:1.35rem;line-height:1.25;color:var(--fg)}
+.orrow{display:flex;flex-wrap:wrap;gap:8px;align-items:center;font-family:var(--hand);font-size:1.3rem;color:var(--muted)}
+.heart{font:inherit;background:none;border:0;color:var(--muted);padding:6px;cursor:pointer;display:inline-flex;border-radius:50%;flex:none}
+.heart[aria-pressed="true"]{color:var(--accent)}
+.heart svg{transition:transform .15s}
+.heart[aria-pressed="true"] svg{transform:scale(1.15)}
+.platgrid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px}
+.pl{font:inherit;display:flex;align-items:center;gap:10px;padding:12px 14px;border:1px solid var(--line);border-radius:16px;background:var(--surface);color:var(--fg);cursor:pointer;text-align:left;min-width:0}
+.pl .hi{color:var(--muted);flex:none;display:flex}
+.pl[aria-pressed="true"]{border-color:var(--accent);background:var(--wine);box-shadow:0 0 0 1px var(--accent)}
+.pl[aria-pressed="true"] .hi{color:var(--accent)}
+.pl small{display:block;color:var(--gold);font-size:.68rem;letter-spacing:.1em;text-transform:uppercase;font-weight:700}
+
+.ideas{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:10px}
+.ideas li{background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:14px 16px;display:flex;flex-direction:column;gap:4px}
+.ideas b{font-family:var(--display);font-size:1.3rem;font-style:italic;color:var(--accent)}
+.idea-top{display:flex;justify-content:space-between;gap:10px;align-items:flex-start}
+.ideas .swap{align-self:flex-start}
+.hint{border-left:2px solid var(--gold);padding:2px 0 2px 12px;color:var(--muted)}
+.tip{display:flex;flex-direction:column;gap:3px;padding:14px 16px;border-radius:16px;background:var(--surface2);border:1px solid var(--line)}
+.row-btns{display:flex;flex-wrap:wrap;gap:10px;align-items:center}
+.link-btn{font:inherit;background:none;border:0;color:var(--accent);font-weight:700;padding:6px 0;cursor:pointer;text-align:left;width:fit-content}
+.btn{font:inherit;font-weight:700;background:var(--accent);color:var(--accent-ink);border:0;border-radius:999px;padding:12px 22px;cursor:pointer;width:fit-content}
+.btn.ghost{background:none;color:var(--accent);border:1px solid var(--accent)}
+.btn.small{padding:8px 14px;font-size:.9rem}
+
+.checks{list-style:none;margin:0;padding:0;display:flex;flex-direction:column}
+.checks li{border-bottom:1px solid var(--line)}
+.rowbtn{font:inherit;color:var(--fg);background:none;border:0;display:flex;gap:12px;align-items:flex-start;padding:13px 0;width:100%;text-align:left;cursor:pointer}
+.rowbtn .hs{color:var(--muted);flex:none;display:flex}
+.rowbtn[aria-pressed="true"] .hs{color:var(--accent)}
+.rowbtn[aria-pressed="true"] .what{text-decoration:line-through;color:var(--muted)}
+.rowbtn .what{display:block}
+.when{display:block;font-size:.72rem;color:var(--gold);font-weight:700;letter-spacing:.12em;text-transform:uppercase}
+.progress{height:6px;border-radius:99px;background:var(--line);overflow:hidden}
+.progress i{display:block;height:100%;background:linear-gradient(90deg,var(--wine),var(--accent));transition:width .25s}
+.done-note{font-family:var(--hand);font-weight:700;font-size:1.4rem;color:var(--accent)}
+
+form{background:var(--surface);border:1px solid var(--line);border-radius:18px;padding:18px;display:grid;gap:16px}
+.row2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.row4{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}
+@media (max-width:480px){.row4{grid-template-columns:1fr 1fr}}
+label.f{display:flex;flex-direction:column;gap:5px;font-size:.84rem;font-weight:700;color:var(--muted);min-width:0}
+input[type=text],input[type=number],input[type=date],select,textarea{
+  font:inherit;font-weight:400;color:var(--fg);background:var(--bg);border:1px solid var(--line);border-radius:12px;padding:11px 13px;width:100%;min-width:0;color-scheme:dark
+}
+textarea{resize:vertical;min-height:64px}
+.msg{font-size:.9rem;color:var(--accent);font-weight:700;min-height:1.2em}
+.numrow{background:var(--surface2);border:1px solid var(--line);border-radius:14px;padding:12px;display:grid;gap:10px}
+.numrow b{font-family:var(--display);font-style:italic;font-size:1.2rem;color:var(--accent)}
+
+details.acc{background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:0 16px}
+details.acc summary{cursor:pointer;padding:14px 0;font-family:var(--display);font-style:italic;font-weight:700;font-size:1.3rem;list-style:none;display:flex;justify-content:space-between;gap:10px}
+details.acc summary::-webkit-details-marker{display:none}
+details.acc summary::after{content:"+";color:var(--gold);font-family:var(--body);font-style:normal}
+details.acc[open] summary::after{content:"\2212"}
+.acc-body{display:flex;flex-direction:column;gap:12px;padding-bottom:16px}
+.fmt{display:flex;flex-direction:column;gap:3px;padding-top:12px;border-top:1px solid var(--line)}
+.fmt:first-child{border-top:0;padding-top:0}
+.fmt b{color:var(--accent)}
+.fmt .meta{font-size:.84rem}
+
+.weekbar{display:flex;flex-wrap:wrap;justify-content:space-between;align-items:center;gap:10px}
+.strip{display:grid;grid-template-columns:repeat(7,1fr);gap:6px}
+.day{font:inherit;display:flex;flex-direction:column;align-items:center;gap:5px;padding:9px 2px;border:1px solid var(--line);border-radius:14px;background:var(--surface);font-size:.72rem;color:var(--muted);min-width:0;cursor:pointer}
+.day.now{border-color:var(--gold)}
+.day.sel{background:var(--wine);border-color:var(--accent);color:var(--fg)}
+.day .dn{font-weight:700;font-size:.9rem;color:var(--fg)}
+.day .blank{height:18px;width:18px}
+.minih{color:var(--line);display:flex}
+.minih.on{color:var(--accent)}
+.daylist{background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:14px 16px;display:flex;flex-direction:column;gap:8px}
+.daylist ul{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:6px}
+.tag{display:inline-block;font-size:.72rem;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--accent-ink);background:var(--accent);border-radius:99px;padding:2px 9px;margin-right:6px}
+.plats{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:10px}
+.plat{background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:14px 16px;display:flex;flex-direction:column;gap:8px;min-width:0}
+.plat-top{display:flex;justify-content:space-between;gap:8px;flex-wrap:wrap;align-items:baseline}
+.plat-top b{font-family:var(--display);font-size:1.3rem;font-style:italic}
+.delta{font-size:.84rem;font-weight:700}
+.delta.up{color:var(--accent)}
+.delta.down{color:var(--warn)}
+.delta.flat{color:var(--muted)}
+.bar{height:6px;border-radius:99px;background:var(--line);overflow:hidden}
+.bar i{display:block;height:100%;background:linear-gradient(90deg,var(--wine),var(--accent))}
+.nums{display:flex;flex-wrap:wrap;gap:4px 16px;font-variant-numeric:tabular-nums;font-weight:500}
+.summary{font-size:1.05rem}
+.stats{display:grid;grid-template-columns:repeat(4,1fr);border-top:1px solid var(--line);border-bottom:1px solid var(--line)}
+@media (max-width:520px){.stats{grid-template-columns:1fr 1fr}}
+.stat{padding:14px 8px 14px 0;display:flex;flex-direction:column;gap:2px;min-width:0}
+.stat b{font-family:var(--display);font-size:2.1rem;font-variant-numeric:tabular-nums;font-style:italic}
+.stat span{font-size:.8rem;color:var(--muted)}
+.cols{display:grid;grid-template-columns:1fr 1fr;gap:20px}
+@media (max-width:620px){.cols{grid-template-columns:1fr}}
+.cols>div{min-width:0;display:flex;flex-direction:column;gap:10px}
+.pts{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:12px}
+.pts li{padding-left:22px;position:relative}
+.pts li::before{content:"";position:absolute;left:0;top:.5em;width:9px;height:9px;border-radius:50%;background:var(--accent)}
+.pts.try li::before{background:var(--gold)}
+.note{font-size:.85rem;color:var(--muted)}
+.past{width:100%;border-collapse:collapse;font-variant-numeric:tabular-nums;font-size:.9rem}
+.past th,.past td{text-align:left;padding:8px 10px 8px 0;border-bottom:1px solid var(--line)}
+.past th{color:var(--muted);font-weight:700;font-size:.74rem;letter-spacing:.08em;text-transform:uppercase}
+.tscroll{overflow-x:auto}
+
+.posts{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:10px}
+.post{padding:14px 16px;background:var(--surface);border:1px solid var(--line);border-radius:16px;display:flex;flex-direction:column;gap:8px;min-width:0}
+.post h3{overflow-wrap:anywhere}
+.meta{font-size:.85rem;color:var(--muted)}
+.actions{display:flex;flex-wrap:wrap;gap:6px 14px}
+.danger{color:var(--warn)}
+.empty{padding:14px 0;color:var(--muted)}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+
+</head>
+<body>
+<main>
+  <header class="hero">
+    <div class="hero-top">
+      <svg class="ic" width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 14.5A8.5 8.5 0 0 1 9.5 4 8.5 8.5 0 1 0 20 14.5z"/><path d="M17 3v3M15.5 4.5h3"/></svg>
+      <span class="eyebrow" id="today-label"></span>
+    </div>
+    <h1 id="greet">Habari, Angela</h1>
+    <p class="cheer" id="cheer"></p>
+    <div class="streak" id="streak"></div>
+    <p class="daily" id="daily"></p>
+    <p class="net" id="net" hidden>You are offline. Your posts save on this phone and sync to your account when you are back online.</p>
+  </header>
+
+  <section aria-labelledby="h-in">
+    <div class="sec-head">
+      <h2 id="h-in">Today's check-in</h2>
+    </div>
+    <div class="dayback" id="dayback"></div>
+    <div class="panel">
+      <div>
+        <p class="sub" id="sub-where">Where are you today</p>
+        <div class="chips" id="chips" role="group" aria-label="Where you are" style="margin-top:10px"></div>
+        <p class="chosen" id="act-says"></p>
+      </div>
+      <label class="f" for="place">Somewhere else? Write the place
+        <input type="text" id="place" maxlength="60" placeholder="Example: a friend's salon, the market, church">
+      </label>
+      <div>
+        <p class="sub" id="sub-mood">Your mood today</p>
+        <div class="pick" id="moods" role="group" aria-label="Your mood" style="margin-top:10px"></div>
+        <p class="chosen" id="mood-says"></p>
+      </div>
+      <div>
+        <p class="sub" id="sub-wx">Today's weather</p>
+        <div class="pick" id="weather" role="group" aria-label="The weather" style="margin-top:10px"></div>
+        <p class="chosen" id="wx-says"></p>
+      </div>
+      <label class="f" for="wnote">Weather details (optional)
+        <input type="text" id="wnote" maxlength="60" placeholder="Example: 24 degrees, rain after 4pm">
+      </label>
+    </div>
+  </section>
+
+  <section aria-labelledby="h-pick">
+    <div class="sec-head"><h2 id="h-pick">Today's pick</h2></div>
+    <div class="pickcard" id="pickcard"></div>
+    <div class="orrow" id="orrow"></div>
+    <p class="sub">Post it on</p>
+    <div class="platgrid" id="platgrid" role="group" aria-label="Platforms to post on"></div>
+    <div class="row-btns"><button class="btn ghost small" type="button" data-act="newpick">Suggest something else</button></div>
+  </section>
+
+  <section aria-labelledby="h-today">
+    <div class="sec-head"><h2 id="h-today">Ideas to film</h2></div>
+    <ol class="ideas" id="ideas"></ol>
+    <p class="hint" id="wx-hint" hidden></p>
+    <div class="tip" id="tip"></div>
+    <div class="row-btns">
+      <button class="btn" type="button" data-act="shuffle">These don't work, give me new ones</button>
+    </div>
+  </section>
+
+  <section aria-labelledby="h-check">
+    <div class="sec-head">
+      <h2 id="h-check">Today's reminders</h2>
+      <p class="muted" id="check-count"></p>
+    </div>
+    <div class="progress" aria-hidden="true"><i id="bar" style="width:0%"></i></div>
+    <ul class="checks" id="checks"></ul>
+    <label class="f" for="win">One thing you did well today
+      <input type="text" id="win" maxlength="140" placeholder="Example: I filmed even though I was tired">
+    </label>
+  </section>
+
+  <section aria-labelledby="h-fmt">
+    <div class="sec-head">
+      <h2 id="h-fmt">Ways to post</h2>
+    </div>
+    <details class="acc"><summary>Types of posts</summary><div class="acc-body" id="formats"></div></details>
+    <details class="acc"><summary>Platform guide</summary><div class="acc-body" id="platguide"></div></details>
+  </section>
+
+  <section aria-labelledby="h-log">
+    <div class="sec-head">
+      <h2 id="h-log">Log a post</h2>
+    </div>
+    <form id="post-form" autocomplete="off">
+      <label class="f" for="f-title">What was the post about?
+        <input type="text" id="f-title" maxlength="90" placeholder="Example: Errand run from Westlands to CBD" required>
+      </label>
+      <div class="row2">
+        <label class="f" for="f-type">Type of post
+          <select id="f-type"></select>
+        </label>
+        <label class="f" for="f-date">Date posted
+          <input type="date" id="f-date" required>
+        </label>
+      </div>
+      <div>
+        <p class="sub">Posted on (pick one or more)</p>
+        <div class="platgrid" id="f-plats" role="group" aria-label="Platforms you posted on" style="margin-top:10px"></div>
+      </div>
+      <div id="f-nums" style="display:grid;gap:12px"></div>
+      <label class="f" for="f-note">How did you open the video? (optional)
+        <textarea id="f-note" maxlength="200" placeholder="Example: Started with 'Someone paid me to run this errand today'"></textarea>
+      </label>
+      <div><button class="btn" type="submit">Save post</button></div>
+      <p class="msg" id="form-msg" role="status"></p>
+    </form>
+  </section>
+
+  <section aria-labelledby="h-week">
+    <div class="sec-head">
+      <h2 id="h-week">This week by platform</h2>
+      <p class="muted" id="week-label"></p>
+    </div>
+    <p class="summary" id="week-summary"></p>
+    <div class="strip" id="strip"></div>
+    <div class="daylist" id="daylist"></div>
+    <ul class="plats" id="plats"></ul>
+    <div class="weekbar">
+      <button class="btn ghost small" type="button" data-act="new-week">Restart the week</button>
+      <span id="week-confirm"></span>
+    </div>
+    <details class="acc"><summary>Past weeks</summary><div class="acc-body"><div class="tscroll" id="past"></div></div></details>
+  </section>
+
+  <section aria-labelledby="h-res">
+    <div class="sec-head">
+      <h2 id="h-res">What your numbers say</h2>
+    </div>
+    <div class="chips" id="f-plat" role="group" aria-label="Platform"></div>
+    <div class="chips" id="f-scope" role="group" aria-label="Time range"></div>
+    <div class="stats" id="stats"></div>
+    <div class="cols">
+      <div><h3>What is working</h3><ul class="pts" id="working"></ul></div>
+      <div><h3>Try next</h3><ul class="pts try" id="improve"></ul></div>
+    </div>
+    <p class="note">Based on a small number of posts.</p>
+  </section>
+
+  <section aria-labelledby="h-posts">
+    <div class="sec-head">
+      <h2 id="h-posts">Your posts</h2>
+      <p class="muted" id="save-note"></p>
+    </div>
+    <ul class="posts" id="posts"></ul>
+  </section>
+</main>
+
+<script>
+(function(){
+  var $ = function(s){ return document.querySelector(s); };
+  var esc = function(s){ return String(s == null ? "" : s).replace(/[&<>"']/g, function(c){ return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]; }); };
+  var pad = function(n){ return String(n).padStart(2, "0"); };
+  var ymd = function(d){ return d.getFullYear() + "-" + pad(d.getMonth() + 1) + "-" + pad(d.getDate()); };
+  var num = function(n){ return Math.round(n).toLocaleString("en-US"); };
+  var today = ymd(new Date());
+  var viewDate = today;
+  var LS = "angela-content-tracker";
+
+  var TYPES = ["Errand run", "Long walk", "School day", "Silent vlog", "Talking vlog", "Lip sync", "Carousel", "Photo dump", "Voice-over day", "Comment reply", "Job hunt", "Day in the life", "Other"];
+  var PLATFORMS = ["TikTok", "Instagram", "Facebook", "YouTube Shorts", "WhatsApp Status"];
+  var FMT_PLATS = {
+    "Silent vlog": ["TikTok", "Instagram"],
+    "Talking vlog": ["TikTok", "Facebook", "YouTube Shorts"],
+    "Lip sync": ["TikTok", "Instagram"],
+    "Carousel": ["Instagram", "Facebook"],
+    "Photo dump": ["Instagram", "Facebook", "WhatsApp Status"],
+    "Voice-over day": ["TikTok", "YouTube Shorts", "Instagram"],
+    "Comment reply": ["TikTok", "Instagram"]
+  };
+  var BASE = {
+    schoolgo: ["Silent vlog", "Carousel", "Voice-over day"],
+    school: ["Carousel", "Silent vlog", "Talking vlog"],
+    errands: ["Silent vlog", "Voice-over day", "Talking vlog"],
+    walk: ["Silent vlog", "Talking vlog", "Lip sync"],
+    jobs: ["Talking vlog", "Carousel", "Comment reply"],
+    home: ["Talking vlog", "Lip sync", "Carousel", "Comment reply"],
+    other: ["Silent vlog", "Talking vlog", "Carousel"]
+  };
+
+  var ICONS = {
+    glowing: '<circle cx="12" cy="13" r="8.5"/><path d="M8.5 12q1.2-1.5 2.4 0M13.1 12q1.2-1.5 2.4 0M9 16q3 2.6 6 0"/><path d="M19 2.5v4M17 4.5h4"/>',
+    happy: '<circle cx="12" cy="12" r="9"/><path d="M9 10.5h.01M15 10.5h.01" stroke-width="2.4"/><path d="M8 14q4 4.2 8 0"/>',
+    calm: '<circle cx="12" cy="12" r="9"/><path d="M7.8 10.5q1.2 1.3 2.4 0M13.8 10.5q1.2 1.3 2.4 0M9.5 15q2.5 1.6 5 0"/>',
+    tired: '<circle cx="12" cy="12" r="9"/><path d="M7.8 10.5h2.8M13.4 10.5h2.8M9.5 15.5h5"/>',
+    bored: '<circle cx="12" cy="12" r="9"/><path d="M9 10.5h.01M15 10.5h.01" stroke-width="2.4"/><path d="M9 15.8h6"/><path d="M7.5 8.2h3M13.5 8.2h3"/>',
+    low: '<circle cx="12" cy="12" r="9"/><path d="M9 10.5h.01M15 10.5h.01" stroke-width="2.4"/><path d="M8.5 16.5q3.5-3.2 7 0"/>',
+    stressed: '<circle cx="12" cy="12" r="9"/><path d="M7.5 8l3 1.1M16.5 8l-3 1.1"/><path d="M9 11.5h.01M15 11.5h.01" stroke-width="2.4"/><path d="M8 15.8q1-1.1 2 0t2 0t2 0t2 0"/>',
+    loved: '<path d="M12 20s-7.5-4.6-7.5-10A4.1 4.1 0 0 1 12 7.6 4.1 4.1 0 0 1 19.5 10c0 5.4-7.5 10-7.5 10z"/>',
+    sunny: '<circle cx="12" cy="12" r="4"/><path d="M12 2.5v2.5M12 19v2.5M2.5 12H5M19 12h2.5M5.3 5.3l1.8 1.8M16.9 16.9l1.8 1.8M5.3 18.7l1.8-1.8M16.9 7.1l1.8-1.8"/>',
+    cloudy: '<path d="M7 18.5h10.2a4 4 0 0 0 .3-8 5.6 5.6 0 0 0-10.7 1.4A3.4 3.4 0 0 0 7 18.5z"/>',
+    rainy: '<path d="M7 14.5h10.2a4 4 0 0 0 .3-8 5.6 5.6 0 0 0-10.7 1.4A3.4 3.4 0 0 0 7 14.5z"/><path d="M8.5 18l-1 2.5M12.5 18l-1 2.5M16.5 18l-1 2.5"/>',
+    windy: '<path d="M3 9h10.5a2.6 2.6 0 1 0-2.6-2.6"/><path d="M3 13.5h14.5a3 3 0 1 1-3 3"/><path d="M3 18h6"/>'
+  };
+  function icon(k, sz){
+    return '<svg class="ic" width="' + (sz || 28) + '" height="' + (sz || 28) + '" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">' + (ICONS[k] || "") + '</svg>';
+  }
+  function heartSvg(on, sz){
+    return '<svg class="ic" width="' + (sz || 26) + '" height="' + (sz || 26) + '" viewBox="0 0 24 24" fill="' + (on ? "currentColor" : "none") + '" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round" aria-hidden="true"><path d="M12 20s-7.5-4.6-7.5-10A4.1 4.1 0 0 1 12 7.6 4.1 4.1 0 0 1 19.5 10c0 5.4-7.5 10-7.5 10z"/></svg>';
+  }
+  var MOODS = [["glowing","Glowing"],["happy","Happy"],["calm","Calm"],["loved","Loved"],["bored","Bored"],["tired","Tired"],["low","Low"],["stressed","Stressed"]];
+  var WEATHER = [["sunny","Sunny"],["cloudy","Cloudy"],["rainy","Rainy"],["windy","Windy"]];
+  var LOW_MOODS = ["tired", "low", "stressed", "bored"];
+  var WX_HINT = {
+    sunny: "Bright sun: film outside, keep the sun to your side or behind the phone, and avoid noon when shadows are harsh.",
+    cloudy: "Soft cloudy light is flattering. It is a good day for face-to-camera clips outdoors.",
+    rainy: "Rain: keep the phone in a clear plastic bag when outside. Indoors, film from a window or make a photo carousel.",
+    windy: "Wind swallows your voice. Use text on screen, a lip sync or a silent vlog instead of talking outside."
+  };
+
+  var ACTIVITIES = {
+    schoolgo: { label: "Going to school", type: "School day", ideas: [
+      ["Getting out the door", "Short clips of your bag, your shoes and locking the door. Add a line of text like the time you leave."],
+      ["Commute in 15 seconds", "Quick 2 second clips of each part of the trip. Cut them to a beat so it moves."],
+      ["Today's plan", "Say or write your three goals for the day and promise an update tonight."],
+      ["What is in my school bag", "Lay the bag on a clean surface by a window and show each item with one word of text."],
+      ["Morning walk to class", "Film from low down, walking away from the camera. Add soft music and no talking."]
+    ]},
+    school: { label: "At school", type: "School day", ideas: [
+      ["Day at school in 10 clips", "One 2 second clip every hour. Put the time on screen on each one."],
+      ["Study with me", "Prop the phone and film your desk for 20 seconds with soft sounds. Add a timer on screen."],
+      ["Campus corners", "Show 3 spots on campus you like, such as a quiet bench or a good view."],
+      ["Break time chat", "Talk to the camera for 30 seconds about the best and hardest part of your day."],
+      ["Notes carousel", "Photograph 6 pages or snippets of notes in daylight. Slide 1 is the title, last slide asks viewers a question."]
+    ]},
+    errands: { label: "Running errands", type: "Errand run", ideas: [
+      ["The errand in one sentence", "Open with text on screen: the task, where from, where to. Show the item or the list in the first 2 seconds."],
+      ["Route in 15 seconds", "Quick clips of each leg: walking, matatu, boda, arrival. Cut every clip to 2 seconds."],
+      ["The hand-over", "Close-up of the item changing hands, then the client's reaction. Ask permission before you film anyone's face."],
+      ["What went wrong today", "One small problem (traffic, wrong address, a long queue) and how you solved it. Viewers stay for the fix."],
+      ["Earned vs spent", "End of the day: what you earned, what you spent on fare, what is left. Show it on screen as plain numbers."],
+      ["A day of errands, 3 stops", "Number each stop on screen. Finish with the stop that surprised you the most."]
+    ]},
+    walk: { label: "Long walk", type: "Long walk", ideas: [
+      ["Kilometre counter", "Show your phone map at the start and the finish. Add the distance and time as text on the last clip."],
+      ["Things I noticed", "Film 5 small details along the way (a mural, a stall, a shortcut). Add one line of voice-over on each."],
+      ["Walk and talk", "Hold the phone at chest height and share one thing you are learning or planning right now."],
+      ["Golden hour walk", "Walk toward the light in the early morning or around 5pm. Keep the sun to the side so your face is not dark."],
+      ["Walking vs matatu", "Compare time and cost of walking a route against taking transport. Ask viewers which they would choose."],
+      ["Feet and street", "Low angle clips of your steps on different surfaces. Easy to film and looks cinematic."]
+    ]},
+    jobs: { label: "Job hunting", type: "Job hunt", ideas: [
+      ["Applying for promoter jobs", "Show a short clip of you sending applications and say how many you sent this week."],
+      ["My CV in 30 seconds", "Talk through what goes on a promoter CV. Show the page for a moment without personal contacts."],
+      ["Interview prep", "Say your answer to one common question out loud, like why you want brand ambassador work."],
+      ["Outfit for an activation", "Show what you would wear to a brand activation and what you carry in your bag."],
+      ["Job hunt update", "One honest update: what you tried, what you heard back, what you do next."]
+    ]},
+    home: { label: "At home", type: "Talking vlog", ideas: [
+      ["Window light talk", "Sit facing a window so the light is on your face. Talk for 30 seconds about your week."],
+      ["Answer a comment", "Pick one comment or question from a viewer and answer it to the camera."],
+      ["Recut your best clip", "Take your best performing clip and post it again with a new opening line and new text."],
+      ["Plan the week", "Show your list of shoots for the week and ask which one viewers want first."],
+      ["Lessons from this week", "Three things you learned from filming this week, one clip each."]
+    ]},
+    other: { label: "Somewhere else", type: "Day in the life", ideas: [
+      ["Arriving at {place}", "Film the entrance or the street outside first, then yourself walking in. Say why you are there in one sentence."],
+      ["3 things at {place}", "Find three small details at {place}, one clip each, with a word of text on each."],
+      ["Why I came to {place}", "Talk to the camera for 20 seconds about what you plan to do there."],
+      ["Quiet vlog at {place}", "No talking. Short clips of what you do there with soft music."],
+      ["Leaving {place}", "End the day with one clip of how you feel and what you will do next."]
+    ]}
+  };
+  var LOW_IDEAS = [
+    ["Silent vlog from the couch", "Low effort: 5 short clips of small things around you, soft music and one line of text. No talking."],
+    ["10 second lip sync", "Pick a short audio, sit by a window and mime it with expressions. One take is enough."],
+    ["Photo carousel of today", "Take 5 photos of your day and add one sentence on each. Post as a carousel."]
+  ];
+  var ORDER = ["schoolgo", "school", "errands", "walk", "jobs", "home", "other"];
+
+  var PHONE_TIPS = [
+    ["Wipe the lens", "A smudged lens is the biggest quality loss on a basic phone. Wipe it with a clean cloth before every shoot."],
+    ["Use daylight", "Film outside or beside a window between 8am and 11am or after 4pm. The Vivo Y3 camera struggles in dim light."],
+    ["Lock your focus", "Tap and hold on your subject until focus and exposure lock, so the picture does not flicker."],
+    ["Go low and steady", "Hold the phone with both hands, elbows tucked in, and tilt it slightly up from low down. It looks bigger and more cinematic."],
+    ["Skip the zoom", "Digital zoom turns grainy on this phone. Walk closer to the subject instead."],
+    ["Shoot 1080p at 30fps", "Higher settings fill your storage and make the phone work harder. Clear space before you go out."],
+    ["Keep the light behind the phone", "Stand with the sun at your back or side. Light behind you turns your face into a dark shape."],
+    ["Film in short clips", "Record 3 to 5 second clips of different angles: wide, close, detail, face. Cut them together after."]
+  ];
+
+  var REMINDERS = [
+    ["check-phone", "Morning", "Charge the phone, free up storage, wipe the lens"],
+    ["film-clips", "While out", "Film 5 short clips: wide shot, close-up, detail, you talking, you walking"],
+    ["pick-post", "Afternoon", "Pick the best clips and cut them to under 30 seconds"],
+    ["post", "Evening", "Post one video between 6pm and 9pm"],
+    ["reply", "After posting", "Spend 10 minutes replying to comments"],
+    ["log", "Before bed", "Log yesterday's views and likes in this tracker"]
+  ];
+
+  var FORMATS = [
+    ["Silent vlog", "No talking. Short clips of your day with soft music and a little text on screen.", "20 to 40 seconds. Best on TikTok and Instagram Reels.", "Film 8 to 10 clips of 2 to 3 seconds each. Put one line of text on the first clip so people know the story."],
+    ["Talking vlog", "You speak to the camera about your day, a lesson or an update.", "30 to 45 seconds. Best on TikTok, Facebook and YouTube Shorts.", "Say your hook in the first sentence. Face a window or film outside, hold the phone at eye level, and speak a little slower than normal."],
+    ["Lip sync", "You mime a trending audio or a voice clip with your expressions and gestures.", "10 to 20 seconds. Best on TikTok and Instagram Reels.", "Pick an audio that is trending this week, practise twice, keep the phone steady at eye level and use your face and hands to tell the story."],
+    ["Photo dump", "5 to 10 of your best photos from the day or week, with a short caption.", "No filming needed. Best on Instagram, Facebook and WhatsApp Status.", "Take the photos in soft daylight, pick the 6 clearest, and start with the best one. Add one line about the mood of the day."],
+    ["Carousel", "A swipe post of 5 to 8 photos or slides, one point on each.", "5 to 8 slides. Best on Instagram and Facebook.", "Slide 1 is the title, slides 2 to 7 are one point each, the last slide asks viewers to save or comment. Example: What 7 errands taught me."],
+    ["Voice-over day", "Clips of your day with your voice added over them afterwards.", "30 to 60 seconds. Best on TikTok, YouTube Shorts and Reels.", "Film the day silently, then record your voice in a quiet room while you watch the clips. The sound stays clearer than talking outside."],
+    ["Comment reply", "You answer one viewer's question or comment on camera.", "15 to 30 seconds. Best on TikTok and Instagram.", "Show the comment on screen first, then answer in two sentences. It brings back people who commented."]
+  ];
+  var PLAT_GUIDE = [
+    ["TikTok", "Short videos with trending sounds. Great for reach with new people.", "Hook in the first 2 seconds. Post between 6pm and 9pm. Reply to comments with a video."],
+    ["Instagram", "Reels for reach and carousels for saves. Good for brands to find you.", "Add cover text. Share the Reel to Stories the same day so followers see it."],
+    ["Facebook", "Reaches an older group, including people in their late 20s and 30s.", "Talking vlogs and longer clips do well. Share your Reels there and post in local community groups."],
+    ["YouTube Shorts", "Vertical videos under 60 seconds that stay searchable for longer.", "Use a clear title with words people search, like Nairobi errands."],
+    ["WhatsApp Status", "Reaches people who already know you, including agencies and contacts.", "Post your best clip of the week so promoters and clients see your work."]
+  ];
+
+  var DAILY = [
+    "Your phone is enough to start. Good light and a steady hand do most of the work.",
+    "Your daily errands are your story. Nobody else has your routes.",
+    "Small clips posted often beat one perfect video that never goes out.",
+    "Slow weeks happen to everyone who posts. Keep the rhythm and compare the numbers next week.",
+    "You know Nairobi's streets better than most of your viewers. Show what you see.",
+    "One post today is a win. Log it and move on.",
+    "Every clip teaches you something about angles and timing.",
+    "Speaking well on camera is a skill many creators work hard to build. Use it.",
+    "Brands notice creators who post steadily and reply to their comments.",
+    "Rest is part of the plan. Decide your next shoot before you sleep."
+  ];
+  var GREET = {
+    morning: ["Good morning, Angela", "Rise and shine, Angela", "Habari ya asubuhi, Angela", "Morning, beautiful", "A fresh day, Angela"],
+    afternoon: ["Habari, Angela", "Good afternoon, Angela", "Hello, gorgeous", "Mambo, Angela", "Hey you, Angela"],
+    evening: ["Good evening, Angela", "Habari ya jioni, Angela", "Hello, beautiful", "Welcome back, Angela", "Evening, Angela"]
+  };
+
+  var state = { posts: [], days: {}, weekStarts: [], updatedAt: 0 };
+  var pick = [0, 1, 2], pickSeed = 0, tipIdx = 0;
+  var editId = null, delId = null, confirmWeek = false;
+  var resPlat = "All", resScope = "week";
+  var formPlats = ["TikTok"], formNums = {};
+  var saver = null, inflight = 0;
+  var chain = Promise.resolve();
+
+  function addDays(s, n){ var d = new Date(s + "T12:00:00"); d.setDate(d.getDate() + n); return ymd(d); }
+  function mondayOf(s){ var d = new Date(s + "T12:00:00"); d.setDate(d.getDate() - ((d.getDay() + 6) % 7)); return ymd(d); }
+  function nice(s){ return new Date(s + "T12:00:00").toLocaleDateString("en-GB", { day: "numeric", month: "short" }); }
+  function weekdayName(s){ return new Date(s + "T12:00:00").toLocaleDateString("en-GB", { weekday: "long" }); }
+  function dayWord(){ return viewDate === today ? "Today" : weekdayName(viewDate); }
+
+  function normalize(d){
+    d = d || {};
+    return {
+      posts: Array.isArray(d.posts) ? d.posts : [],
+      days: (d.days && typeof d.days === "object") ? d.days : {},
+      weekStarts: Array.isArray(d.weekStarts) ? d.weekStarts.slice().sort() : [],
+      updatedAt: +d.updatedAt || 0
+    };
+  }
+  function isEmpty(s){ return !s.posts.length && !Object.keys(s.days).length; }
+  function ensureWeeks(){
+    var ws = state.weekStarts;
+    if (!ws.length) ws.push(mondayOf(today));
+    while (today >= addDays(ws[ws.length - 1], 7)) ws.push(addDays(ws[ws.length - 1], 7));
+  }
+
+  function persist(){
+    state.updatedAt = Date.now();
+    var snap = JSON.stringify(state);
+    try { localStorage.setItem(LS, snap); } catch(e){}
+    if (saver) {
+      inflight++;
+      chain = chain.then(function(){ return saver(JSON.parse(snap)); })
+        .then(function(){ setNote(); })
+        .catch(function(){ setNote("Could not reach your account. Your posts are kept on this phone and will sync later."); })
+        .then(function(){ inflight--; });
+    }
+  }
+  function setNote(t){ $("#save-note").textContent = t || "Your posts are saved to your account and kept on this phone."; }
+
+  function dayRec(d){
+    d = d || viewDate;
+    if (!state.days[d]) state.days[d] = { checks: {}, win: "" };
+    if (!state.days[d].checks) state.days[d].checks = {};
+    return state.days[d];
+  }
+  function activity(){ var a = dayRec().activity; return ACTIVITIES[a] ? a : ""; }
+  function actKey(){ return activity() || "errands"; }
+  function lowEnergy(){ return LOW_MOODS.indexOf(dayRec().mood) > -1; }
+  function hasHeart(key){ var h = dayRec().hearts; return !!(h && h[key]); }
+  function postsOn(d){ return state.posts.filter(function(p){ return p.date === d; }); }
+  function dayHearted(d){
+    var r = state.days[d], ticks = 0;
+    if (r && r.checks) Object.keys(r.checks).forEach(function(k){ if (r.checks[k]) ticks++; });
+    return ticks >= 3 || postsOn(d).length > 0;
+  }
+  function streakCount(){
+    var d = dayHearted(today) ? today : addDays(today, -1), n = 0;
+    while (dayHearted(d) && n < 400) { n++; d = addDays(d, -1); }
+    return n;
+  }
+
+  function sortedPosts(){
+    return state.posts.slice().sort(function(a, b){
+      return a.date < b.date ? 1 : a.date > b.date ? -1 : (b.id > a.id ? 1 : -1);
+    });
+  }
+  function totals(posts){
+    var t = { n: posts.length, views: 0, likes: 0, comments: 0, shares: 0 };
+    posts.forEach(function(p){ t.views += +p.views || 0; t.likes += +p.likes || 0; t.comments += +p.comments || 0; t.shares += +p.shares || 0; });
+    t.eng = t.views ? (t.likes + t.comments + t.shares) / t.views * 100 : 0;
+    return t;
+  }
+  function weekPosts(i){
+    var ws = state.weekStarts, start = ws[i], end = i < ws.length - 1 ? ws[i + 1] : "9999-12-31";
+    return state.posts.filter(function(p){ return p.date >= start && p.date < end; });
+  }
+  function groupAvg(posts, key){
+    var g = {};
+    posts.forEach(function(p){ (g[p[key]] = g[p[key]] || []).push(+p.views || 0); });
+    return Object.keys(g).map(function(k){
+      var a = g[k]; return { name: k, n: a.length, avg: a.reduce(function(s, x){ return s + x; }, 0) / a.length };
+    }).sort(function(a, b){ return b.avg - a.avg; });
+  }
+
+  function analyze(posts, platformFilter){
+    var n = posts.length, working = [], improve = [];
+    var t = totals(posts);
+    var avg = n ? t.views / n : 0;
+    var weekAgo = addDays(today, -6);
+    var lastWeek = posts.filter(function(p){ return p.date >= weekAgo; });
+    var out = { n: n, views: t.views, avg: avg, eng: t.eng, week: lastWeek.length, working: working, improve: improve };
+
+    if (n === 0) {
+      working.push("Nothing to measure here yet. Your first post gives the tracker something to learn from.");
+      improve.push("Post once today, even a 10 second clip. Log its views and likes tomorrow.");
+      improve.push("Film in daylight and open with the most interesting moment in the first 2 seconds.");
+      return out;
+    }
+    if (n < 3) {
+      working.push("You have " + n + " post" + (n > 1 ? "s" : "") + " here. Patterns start to show from about 3 posts.");
+      improve.push("Update each post's numbers after one day and again after three days. Early numbers change a lot.");
+      improve.push("Try a different type of post next so the tracker can compare them.");
+      return out;
+    }
+
+    var top = posts.slice().sort(function(a, b){ return (+b.views || 0) - (+a.views || 0); })[0];
+    working.push("Your top post is “" + top.title + "” on " + top.platform + " with " + num(top.views || 0) + " views.");
+    improve.push("Watch your top post again. Repeat what you did in the first 3 seconds and how you ended it." + (top.note ? " You noted: “" + top.note + "”." : ""));
+
+    var types = groupAvg(posts, "type");
+    if (types.length >= 2) {
+      working.push("“" + types[0].name + "” posts average " + num(types[0].avg) + " views, your highest type. Make more of them.");
+      var last = types[types.length - 1];
+      if (last.avg < types[0].avg * 0.6) improve.push("“" + last.name + "” posts average " + num(last.avg) + " views. Test a stronger opening on the next one before you drop it.");
+    } else {
+      improve.push("All of these posts are one type. Try a silent vlog, a lip sync or a carousel to see what your viewers prefer.");
+    }
+
+    if (!platformFilter) {
+      var plats = groupAvg(posts, "platform");
+      if (plats.length >= 2) working.push("You get the most views on " + plats[0].name + " (average " + num(plats[0].avg) + "). Post there first.");
+      else improve.push("You have only logged " + plats[0].name + ". Post the same clip on another platform and compare.");
+    }
+
+    var asc = posts.slice().sort(function(a, b){ return a.date < b.date ? -1 : a.date > b.date ? 1 : 0; });
+    if (n >= 4) {
+      var recent = asc.slice(-3), prev = asc.slice(Math.max(0, n - 6), n - 3);
+      var ra = totals(recent).views / recent.length, pa = totals(prev).views / prev.length;
+      if (pa > 0) {
+        var ch = Math.round((ra - pa) / pa * 100);
+        if (ch >= 10) working.push("Your last 3 posts average " + num(ra) + " views, up " + ch + "% on the 3 before. Keep doing what changed.");
+        else if (ch <= -10) improve.push("Your last 3 posts average " + num(ra) + " views, down " + Math.abs(ch) + "% on the 3 before. Compare their openings with your best post.");
+      }
+    }
+    if (t.views > 0) {
+      if (t.eng >= 6) working.push("About " + t.eng.toFixed(1) + "% of viewers like, comment or share. People react to what they see.");
+      else if (t.eng < 3) improve.push("Only " + t.eng.toFixed(1) + "% of viewers like, comment or share. End each video with one simple question and ask them to answer in the comments.");
+    }
+    if (t.comments === 0) improve.push("No comments logged yet. Ask a direct question on screen, such as “Which route would you take?”");
+    if (avg < 300) improve.push("Open with the result or the most interesting moment, keep clips under 20 seconds, and post between 6pm and 9pm when many people are on their phones.");
+    if (lastWeek.length >= 4) working.push("You posted " + lastWeek.length + " times in the last 7 days. Steady posting gives the platforms more to test.");
+    else if (lastWeek.length < 3) improve.push("You posted " + lastWeek.length + " time" + (lastWeek.length === 1 ? "" : "s") + " in the last 7 days. Aim for 3 or 4 a week.");
+    return out;
+  }
+
+  function cheerText(all){
+    var postedToday = postsOn(today).length > 0;
+    var mood = (state.days[today] || {}).mood;
+    if (postedToday) return "You posted today. Showing up like this is how an audience gets built.";
+    if (LOW_MOODS.indexOf(mood) > -1) return "Low energy is allowed. A 10 second clip or a photo carousel still counts as showing up.";
+    if (mood === "glowing" || mood === "happy") return "You are in a good mood today. That energy shows on camera, so film something while it lasts.";
+    if (all.n === 0) return "Starting is the hardest part and you are here. Film one clip today, even 10 seconds long.";
+    if (all.week >= 3) return "You posted " + all.week + " times in the last 7 days. That consistency is what brands and platforms notice.";
+    if (all.n >= 5) return "You have logged " + all.n + " posts. Many people who say they will start never get this far.";
+    return "You have " + all.n + " post" + (all.n > 1 ? "s" : "") + " logged and every one teaches you something. Post again today.";
+  }
+
+  function renderHero(){
+    var d = new Date(), hr = d.getHours();
+    var doy = Math.floor((d - new Date(d.getFullYear(), 0, 0)) / 86400000);
+    var list = hr < 12 ? GREET.morning : hr < 17 ? GREET.afternoon : GREET.evening;
+    $("#greet").textContent = list[doy % list.length];
+    $("#today-label").textContent = d.toLocaleDateString("en-GB", { weekday: "long", day: "numeric", month: "long" });
+    $("#cheer").textContent = cheerText(analyze(state.posts, true));
+    $("#daily").textContent = DAILY[doy % DAILY.length];
+    var n = streakCount(), el = $("#streak");
+    if (n === 0) el.innerHTML = heartSvg(false, 24) + '<span>Tick 3 hearts or post to start your streak</span>';
+    else el.innerHTML = heartSvg(true, 24) + '<span>' + n + ' day' + (n > 1 ? 's' : '') + ' in a row</span><span class="small">' + (dayHearted(today) ? "come back tomorrow for the next one" : "tick 3 hearts today to keep it") + '</span>';
+  }
+
+  function renderCheckin(){
+    var rec = dayRec(), act = activity(), w = dayWord();
+    $("#h-in").textContent = w === "Today" ? "Today's check-in" : w + "'s check-in";
+    $("#h-pick").textContent = w === "Today" ? "Today's pick" : w + "'s pick";
+    $("#h-check").textContent = w === "Today" ? "Today's reminders" : w + "'s reminders";
+    $("#sub-where").textContent = "Where are you " + (w === "Today" ? "today" : "on " + w);
+    $("#sub-mood").textContent = "Your mood " + (w === "Today" ? "today" : "on " + w);
+    $("#sub-wx").textContent = (w === "Today" ? "Today's" : w + "'s") + " weather";
+    $("#dayback").innerHTML = viewDate === today ? "" : '<span class="muted">' + esc(weekdayName(viewDate) + " " + nice(viewDate)) + '</span><button class="btn ghost small" type="button" data-act="viewday" data-d="' + today + '">Back to today</button>';
+
+    $("#chips").innerHTML = ORDER.map(function(k){
+      return '<button type="button" class="chip" data-act="activity" data-k="' + k + '" aria-pressed="' + (k === act) + '">' + esc(ACTIVITIES[k].label) + '</button>';
+    }).join("");
+    $("#moods").innerHTML = MOODS.map(function(m){
+      return '<button type="button" class="pbtn" data-act="mood" data-k="' + m[0] + '" aria-pressed="' + (rec.mood === m[0]) + '">' + icon(m[0], 30) + '<span>' + m[1] + '</span></button>';
+    }).join("");
+    $("#weather").innerHTML = WEATHER.map(function(x){
+      return '<button type="button" class="pbtn" data-act="weather" data-k="' + x[0] + '" aria-pressed="' + (rec.weather === x[0]) + '">' + icon(x[0], 30) + '<span>' + x[1] + '</span></button>';
+    }).join("");
+    var says = function(sel, text){ $(sel).innerHTML = text ? heartSvg(true, 20) + '<span>' + esc(text) + '</span>' : ""; };
+    says("#act-says", act ? (act === "other" && (rec.place || "").trim() ? "At " + rec.place.trim() : ACTIVITIES[act].label) : "");
+    var mlabel = ""; MOODS.forEach(function(m){ if (m[0] === rec.mood) mlabel = m[1]; });
+    says("#mood-says", mlabel ? "Mood: " + mlabel : "");
+    var wlabel = ""; WEATHER.forEach(function(x){ if (x[0] === rec.weather) wlabel = x[1]; });
+    says("#wx-says", wlabel ? "Weather: " + wlabel + (rec.wnote ? ", " + rec.wnote : "") : "");
+    var pl = $("#place"), wn = $("#wnote");
+    if (document.activeElement !== pl) pl.value = rec.place || "";
+    if (document.activeElement !== wn) wn.value = rec.wnote || "";
+  }
+
+  function candidates(){
+    var rec = dayRec(), act = actKey(), m = rec.mood, w = rec.weather;
+    var low = LOW_MOODS.indexOf(m) > -1;
+    var front = [];
+    if (m === "bored") front = ["Carousel", "Lip sync", "Photo dump", "Silent vlog"];
+    else if (low) front = ["Carousel", "Silent vlog", "Photo dump", "Lip sync"];
+    else if (m === "glowing" || m === "happy") front = ["Talking vlog", "Lip sync"];
+    else if (m === "calm") front = ["Silent vlog", "Carousel"];
+    else if (m === "loved") front = ["Carousel", "Lip sync"];
+    var boost = (w === "cloudy" || w === "sunny") && !front.length ? ["Photo dump"] : [];
+    var list = front.concat(boost, BASE[act]);
+    if (low || ((w === "rainy" || w === "windy") && act !== "home")) {
+      list = list.filter(function(x){ return x !== "Talking vlog" && x !== "Comment reply"; });
+    }
+    var seen = {};
+    return list.filter(function(x){ if (seen[x]) return false; seen[x] = 1; return true; });
+  }
+  function pickCtx(){
+    var rec = dayRec(), parts = [];
+    if (rec.activity && ACTIVITIES[rec.activity]) {
+      parts.push(rec.activity === "other" && (rec.place || "").trim() ? "At " + rec.place.trim() : ACTIVITIES[rec.activity].label);
+    }
+    MOODS.forEach(function(m){ if (m[0] === rec.mood) parts.push(m[1]); });
+    WEATHER.forEach(function(x){ if (x[0] === rec.weather) parts.push(x[1]); });
+    return parts;
+  }
+  function renderPick(){
+    var rec = dayRec(), c = candidates(), idx = pickSeed % c.length, f = c[idx];
+    var parts = pickCtx();
+    var ctx = parts.length ? parts.join(" · ") : "Choose where you are and your mood above";
+    var tail = LOW_MOODS.indexOf(rec.mood) > -1 ? " No big plan needed today." : "";
+    var key = "fmt:" + f;
+    $("#pickcard").innerHTML = '<div><p class="eyebrow">Post ' + (viewDate === today ? "today" : "on " + esc(weekdayName(viewDate))) + '</p><h3>Post a ' + esc(f.toLowerCase()) + '</h3><p class="ctx">' + esc(ctx + (parts.length ? "." : "") + tail) + '</p></div>' +
+      '<button type="button" class="heart" data-act="heart" data-k="' + esc(key) + '" aria-pressed="' + hasHeart(key) + '" aria-label="I will do this">' + heartSvg(hasHeart(key), 34) + '</button>';
+    var others = c.filter(function(x, i){ return i !== idx; }).slice(0, 2);
+    $("#orrow").innerHTML = others.length ? '<span>or</span>' + others.map(function(o){
+      return '<button type="button" class="chip" data-act="usepick" data-k="' + esc(o) + '">' + esc(o) + '</button>';
+    }).join("") : "";
+    var sug = FMT_PLATS[f] || [], sel = rec.platforms || [];
+    $("#platgrid").innerHTML = PLATFORMS.map(function(p){
+      var on = sel.indexOf(p) > -1, s = sug.indexOf(p) > -1;
+      return '<button type="button" class="pl" data-act="platform" data-k="' + esc(p) + '" aria-pressed="' + on + '"><span class="hi">' + heartSvg(on, 24) + '</span><span>' + (s ? '<small>Suggested</small>' : '') + esc(p) + '</span></button>';
+    }).join("");
+  }
+
+  function pool(){
+    var act = actKey(), place = (dayRec().place || "").trim() || "your place today";
+    var list = ACTIVITIES[act].ideas.map(function(i){
+      return [i[0].split("{place}").join(place), i[1].split("{place}").join(place)];
+    });
+    return lowEnergy() ? LOW_IDEAS.concat(list) : list;
+  }
+  function renderIdeas(){
+    var list = pool();
+    var out = pick.map(function(x){ return list[x % list.length]; });
+    $("#ideas").innerHTML = out.map(function(x, k){
+      var key = "idea:" + x[0], on = hasHeart(key);
+      return '<li><div class="idea-top"><b>' + esc(x[0]) + '</b><button type="button" class="heart" data-act="heart" data-k="' + esc(key) + '" aria-pressed="' + on + '" aria-label="I will film this">' + heartSvg(on, 28) + '</button></div><span class="muted">' + esc(x[1]) + '</span><button type="button" class="link-btn swap" data-act="swap" data-i="' + k + '">Swap this one</button></li>';
+    }).join("");
+    var wx = dayRec().weather, h = $("#wx-hint");
+    if (wx && WX_HINT[wx]) { h.hidden = false; h.textContent = WX_HINT[wx]; } else { h.hidden = true; }
+    var t = PHONE_TIPS[tipIdx % PHONE_TIPS.length];
+    $("#tip").innerHTML = '<span class="eyebrow">Vivo Y3 tip</span><b>' + esc(t[0]) + '</b><span class="muted">' + esc(t[1]) + '</span>';
+  }
+  function resetPick(){ pick = [0, 1, 2]; pickSeed = 0; }
+
+  function renderChecks(){
+    var rec = dayRec(), done = 0;
+    $("#checks").innerHTML = REMINDERS.map(function(r){
+      var on = !!rec.checks[r[0]]; if (on) done++;
+      return '<li><button type="button" class="rowbtn" data-act="check" data-k="' + r[0] + '" aria-pressed="' + on + '"><span class="hs">' + heartSvg(on, 28) + '</span><span><span class="when">' + esc(r[1]) + '</span><span class="what">' + esc(r[2]) + '</span></span></button></li>';
+    }).join("");
+    $("#check-count").innerHTML = done === REMINDERS.length ? '<span class="done-note">All six hearts collected. See you tomorrow, a new pick will be waiting.</span>' : done + " of " + REMINDERS.length + " hearts collected";
+    $("#bar").style.width = (done / REMINDERS.length * 100) + "%";
+    var wi = $("#win");
+    if (document.activeElement !== wi) wi.value = rec.win || "";
+  }
+
+  function renderGuides(){
+    $("#formats").innerHTML = FORMATS.map(function(f){
+      return '<div class="fmt"><b>' + esc(f[0]) + '</b><span>' + esc(f[1]) + '</span><span class="meta muted">' + esc(f[2]) + '</span><span class="muted">' + esc(f[3]) + '</span></div>';
+    }).join("");
+    $("#platguide").innerHTML = PLAT_GUIDE.map(function(f){
+      return '<div class="fmt"><b>' + esc(f[0]) + '</b><span>' + esc(f[1]) + '</span><span class="muted">' + esc(f[2]) + '</span></div>';
+    }).join("");
+  }
+
+  function renderForm(){
+    $("#f-plats").innerHTML = PLATFORMS.map(function(p){
+      var on = formPlats.indexOf(p) > -1;
+      return '<button type="button" class="pl" data-act="fplat" data-k="' + esc(p) + '" aria-pressed="' + on + '"><span class="hi">' + heartSvg(on, 24) + '</span><span>' + esc(p) + '</span></button>';
+    }).join("");
+    $("#f-nums").innerHTML = formPlats.map(function(p){
+      var ix = PLATFORMS.indexOf(p), v = formNums[p] || {};
+      var inp = function(f, label){
+        return '<label class="f" for="n-' + ix + '-' + f + '">' + label + '<input type="number" id="n-' + ix + '-' + f + '" inputmode="numeric" min="0" placeholder="0" value="' + (v[f] != null ? esc(v[f]) : "") + '"></label>';
+      };
+      return '<div class="numrow"><b>' + esc(p) + '</b><div class="row4">' + inp("views", "Views") + inp("likes", "Likes") + inp("comments", "Comments") + inp("shares", "Shares") + '</div></div>';
+    }).join("");
+  }
+  function syncForm(){
+    var c = candidates(), f = c[pickSeed % c.length], sel = dayRec().platforms || [];
+    if (TYPES.indexOf(f) > -1) $("#f-type").value = f;
+    if (sel.length) { formPlats = sel.slice(); renderForm(); }
+  }
+
+  function renderWeek(){
+    var ws = state.weekStarts, cur = ws.length - 1, start = ws[cur], end = addDays(start, 6);
+    $("#week-label").textContent = "Week of " + nice(start) + " to " + nice(end);
+    var cp = weekPosts(cur), pp = cur > 0 ? weekPosts(cur - 1) : [];
+    var ct = totals(cp), pt = totals(pp);
+    var s = ct.n + " post" + (ct.n === 1 ? "" : "s") + " and " + num(ct.views) + " views this week";
+    if (cur > 0 && pt.views > 0) {
+      var chg = Math.round((ct.views - pt.views) / pt.views * 100);
+      s += chg === 0 ? ", the same as last week." : ", " + (chg > 0 ? "up " : "down ") + Math.abs(chg) + "% on last week.";
+    } else s += ".";
+    $("#week-summary").textContent = s;
+
+    var days = "";
+    for (var k = 0; k < 7; k++) {
+      var d = addDays(start, k), r = state.days[d] || {};
+      var lab = new Date(d + "T12:00:00").toLocaleDateString("en-GB", { weekday: "short" });
+      var hd = dayHearted(d);
+      days += '<button type="button" class="day' + (d === today ? " now" : "") + (d === viewDate ? " sel" : "") + '" data-act="viewday" data-d="' + d + '" aria-pressed="' + (d === viewDate) + '" aria-label="' + esc(weekdayName(d)) + '"><span>' + esc(lab) + '</span><span class="dn">' + parseInt(d.slice(8), 10) + '</span>' +
+        (r.mood ? icon(r.mood, 18) : '<span class="blank"></span>') +
+        (r.weather ? icon(r.weather, 18) : '<span class="blank"></span>') +
+        '<span class="minih' + (hd ? " on" : "") + '">' + heartSvg(hd, 16) + '</span></button>';
+    }
+    $("#strip").innerHTML = days;
+
+    var dp = postsOn(viewDate);
+    $("#daylist").innerHTML = '<span class="sub">Posted ' + (viewDate === today ? "today" : "on " + esc(weekdayName(viewDate))) + '</span>' +
+      (dp.length ? '<ul>' + dp.map(function(p){ return '<li><span class="tag">' + esc(p.platform) + '</span>' + esc(p.title) + '</li>'; }).join("") + '</ul>' : '<span class="muted">Nothing logged for this day yet.</span>');
+
+    var maxV = 1;
+    var rows = PLATFORMS.map(function(pl){
+      var c = totals(cp.filter(function(p){ return p.platform === pl; }));
+      var p = totals(pp.filter(function(x){ return x.platform === pl; }));
+      if (c.views > maxV) maxV = c.views;
+      return { pl: pl, c: c, p: p };
+    });
+    $("#plats").innerHTML = rows.map(function(r){
+      var delta;
+      if (r.c.n === 0 && r.p.n === 0) delta = '<span class="delta flat">No posts yet</span>';
+      else if (r.p.views === 0) delta = r.c.views > 0 ? '<span class="delta up">New this week</span>' : '<span class="delta flat">No views yet</span>';
+      else {
+        var ch = Math.round((r.c.views - r.p.views) / r.p.views * 100);
+        delta = ch > 0 ? '<span class="delta up">Up ' + ch + '% on last week</span>' : ch < 0 ? '<span class="delta down">Down ' + Math.abs(ch) + '% on last week</span>' : '<span class="delta flat">Same as last week</span>';
+      }
+      return '<li class="plat"><div class="plat-top"><b>' + esc(r.pl) + '</b>' + delta + '</div><div class="bar"><i style="width:' + (r.c.views / maxV * 100) + '%"></i></div>' +
+        '<div class="nums"><span>' + r.c.n + ' post' + (r.c.n === 1 ? "" : "s") + '</span><span>' + num(r.c.views) + ' views</span><span>' + num(r.c.likes) + ' likes</span><span>' + num(r.c.comments) + ' comments</span><span>' + r.c.eng.toFixed(1) + '% react</span></div></li>';
+    }).join("");
+
+    var cf = $("#week-confirm");
+    cf.innerHTML = confirmWeek ? '<span class="muted">Close this week and begin a fresh one today? Your posts stay saved.</span> <button class="link-btn" type="button" data-act="week-yes">Yes, restart</button> <button class="link-btn" type="button" data-act="week-no">Cancel</button>' : "";
+
+    var pastRows = "";
+    for (var i = cur - 1; i >= Math.max(0, cur - 8); i--) {
+      var pst = weekPosts(i), t = totals(pst), best = groupAvg(pst, "platform")[0];
+      pastRows += '<tr><td>' + esc(nice(ws[i])) + '</td><td>' + t.n + '</td><td>' + num(t.views) + '</td><td>' + t.eng.toFixed(1) + '%</td><td>' + esc(best ? best.name : "None") + '</td></tr>';
+    }
+    $("#past").innerHTML = pastRows ? '<table class="past"><thead><tr><th>Week of</th><th>Posts</th><th>Views</th><th>React</th><th>Top platform</th></tr></thead><tbody>' + pastRows + '</tbody></table>' : '<p class="muted">Your finished weeks will show here.</p>';
+  }
+
+  function renderResults(){
+    $("#f-plat").innerHTML = ["All"].concat(PLATFORMS).map(function(p){
+      return '<button type="button" class="chip" data-act="rplat" data-k="' + esc(p) + '" aria-pressed="' + (p === resPlat) + '">' + esc(p) + '</button>';
+    }).join("");
+    $("#f-scope").innerHTML = [["week", "This week"], ["all", "All time"]].map(function(s){
+      return '<button type="button" class="chip" data-act="rscope" data-k="' + s[0] + '" aria-pressed="' + (s[0] === resScope) + '">' + s[1] + '</button>';
+    }).join("");
+    var list = resScope === "week" ? weekPosts(state.weekStarts.length - 1) : state.posts;
+    if (resPlat !== "All") list = list.filter(function(p){ return p.platform === resPlat; });
+    var a = analyze(list, resPlat !== "All");
+    $("#stats").innerHTML =
+      '<div class="stat"><b>' + a.n + '</b><span>posts</span></div>' +
+      '<div class="stat"><b>' + num(a.views) + '</b><span>total views</span></div>' +
+      '<div class="stat"><b>' + num(a.avg) + '</b><span>average views</span></div>' +
+      '<div class="stat"><b>' + a.eng.toFixed(1) + '%</b><span>react to a post</span></div>';
+    $("#working").innerHTML = a.working.map(function(t){ return "<li>" + esc(t) + "</li>"; }).join("");
+    $("#improve").innerHTML = a.improve.map(function(t){ return "<li>" + esc(t) + "</li>"; }).join("");
+  }
+
+  function renderPosts(){
+    var list = sortedPosts();
+    if (!list.length) {
+      $("#posts").innerHTML = '<li class="empty">No posts yet. Save your first post above and it will appear here.</li>';
+      return;
+    }
+    $("#posts").innerHTML = list.map(function(p){
+      var body;
+      if (editId === p.id) {
+        body = '<div class="row4">' +
+          ["views", "likes", "comments", "shares"].map(function(f){
+            return '<label class="f" for="e-' + f + '">' + f.charAt(0).toUpperCase() + f.slice(1) + '<input type="number" id="e-' + f + '" inputmode="numeric" min="0" value="' + (+p[f] || 0) + '"></label>';
+          }).join("") + '</div>' +
+          '<div class="actions"><button class="btn small" type="button" data-act="save-edit" data-id="' + esc(p.id) + '">Save numbers</button><button class="link-btn" type="button" data-act="cancel-edit">Cancel</button></div>';
+      } else {
+        body = '<div class="nums"><span>' + num(p.views || 0) + ' views</span><span>' + num(p.likes || 0) + ' likes</span><span>' + num(p.comments || 0) + ' comments</span><span>' + num(p.shares || 0) + ' shares</span></div>' +
+          (p.note ? '<p class="meta">Opening: ' + esc(p.note) + '</p>' : "") +
+          '<div class="actions"><button class="link-btn" type="button" data-act="edit" data-id="' + esc(p.id) + '">Update numbers</button>' +
+          (delId === p.id
+            ? '<button class="link-btn danger" type="button" data-act="del-yes" data-id="' + esc(p.id) + '">Tap again to delete</button><button class="link-btn" type="button" data-act="del-no">Keep</button>'
+            : '<button class="link-btn danger" type="button" data-act="del" data-id="' + esc(p.id) + '">Delete</button>') + '</div>';
+      }
+      return '<li class="post"><h3>' + esc(p.title) + '</h3><p class="meta">' + esc(nice(p.date)) + ' · ' + esc(p.type) + ' · ' + esc(p.platform) + '</p>' + body + '</li>';
+    }).join("");
+  }
+
+  function render(){
+    ensureWeeks();
+    renderHero(); renderCheckin(); renderPick(); renderIdeas(); renderChecks(); renderWeek(); renderResults(); renderPosts();
+  }
+
+  function fillSelect(id, arr){
+    $(id).innerHTML = arr.map(function(x){ return '<option>' + esc(x) + '</option>'; }).join("");
+  }
+
+  document.addEventListener("click", function(e){
+    var t = e.target.closest ? e.target.closest("[data-act]") : null; if (!t) return;
+    var act = t.getAttribute("data-act"), id = t.getAttribute("data-id"), k = t.getAttribute("data-k");
+    var rec;
+    if (act === "activity") {
+      rec = dayRec(); rec.activity = rec.activity === k ? "" : k; resetPick(); persist(); render(); syncForm();
+    } else if (act === "mood") {
+      rec = dayRec(); rec.mood = rec.mood === k ? "" : k; resetPick(); persist(); render(); syncForm();
+    } else if (act === "weather") {
+      rec = dayRec(); rec.weather = rec.weather === k ? "" : k; resetPick(); persist(); render(); syncForm();
+    } else if (act === "newpick") {
+      pickSeed += 1; renderPick(); syncForm();
+    } else if (act === "usepick") {
+      var cl = candidates(), ix = cl.indexOf(k); if (ix > -1) pickSeed = ix; renderPick(); syncForm();
+    } else if (act === "heart") {
+      rec = dayRec(); rec.hearts = rec.hearts || {}; rec.hearts[k] = !rec.hearts[k]; persist(); renderPick(); renderIdeas();
+    } else if (act === "platform") {
+      rec = dayRec(); var pl = rec.platforms || [], at = pl.indexOf(k);
+      if (at > -1) pl.splice(at, 1); else pl.push(k);
+      rec.platforms = pl; persist(); renderPick(); syncForm();
+    } else if (act === "check") {
+      rec = dayRec(); rec.checks[k] = !rec.checks[k]; persist(); render();
+    } else if (act === "fplat") {
+      var fi = formPlats.indexOf(k);
+      if (fi > -1) formPlats.splice(fi, 1); else formPlats.push(k);
+      renderForm();
+    } else if (act === "viewday") {
+      viewDate = t.getAttribute("data-d"); resetPick(); $("#f-date").value = viewDate; render(); syncForm();
+    } else if (act === "shuffle") {
+      var len = pool().length;
+      pick = pick.map(function(x){ return (x + 3) % len; }); tipIdx += 1; renderIdeas();
+    } else if (act === "swap") {
+      var i = +t.getAttribute("data-i"), L = pool().length, c = (pick[i] + 1) % L, g = 0;
+      while (pick.indexOf(c) > -1 && g < L) { c = (c + 1) % L; g++; }
+      pick[i] = c; renderIdeas();
+    } else if (act === "rplat") { resPlat = k; renderResults(); }
+    else if (act === "rscope") { resScope = k; renderResults(); }
+    else if (act === "new-week") { confirmWeek = true; renderWeek(); }
+    else if (act === "week-no") { confirmWeek = false; renderWeek(); }
+    else if (act === "week-yes") {
+      var ws = state.weekStarts;
+      if (today > ws[ws.length - 1]) ws.push(today);
+      confirmWeek = false; resScope = "week"; viewDate = today; $("#f-date").value = today; persist(); render();
+    }
+    else if (act === "edit") { editId = id; delId = null; renderPosts(); }
+    else if (act === "cancel-edit") { editId = null; renderPosts(); }
+    else if (act === "save-edit") {
+      var p = state.posts.filter(function(x){ return x.id === id; })[0];
+      if (p) {
+        ["views", "likes", "comments", "shares"].forEach(function(f){
+          var v = parseInt($("#e-" + f).value, 10); p[f] = isNaN(v) || v < 0 ? 0 : v;
+        });
+        editId = null; persist(); render();
+      }
+    }
+    else if (act === "del") { delId = id; editId = null; renderPosts(); }
+    else if (act === "del-no") { delId = null; renderPosts(); }
+    else if (act === "del-yes") {
+      state.posts = state.posts.filter(function(x){ return x.id !== id; });
+      delId = null; persist(); render();
+    }
+  });
+
+  document.addEventListener("input", function(e){
+    var m = /^n-(\d+)-(views|likes|comments|shares)$/.exec(e.target.id || "");
+    if (m) {
+      var p = PLATFORMS[+m[1]];
+      formNums[p] = formNums[p] || {};
+      formNums[p][m[2]] = e.target.value;
+    }
+  });
+
+  function bindText(sel, field, after){
+    var timer = null;
+    $(sel).addEventListener("input", function(e){
+      var v = e.target.value, d = viewDate;
+      clearTimeout(timer);
+      timer = setTimeout(function(){ dayRec(d)[field] = v; persist(); if (after) after(); }, 600);
+    });
+  }
+  bindText("#win", "win");
+  bindText("#wnote", "wnote", function(){ renderCheckin(); });
+  bindText("#place", "place", function(){ renderCheckin(); renderPick(); renderIdeas(); });
+
+  $("#post-form").addEventListener("submit", function(e){
+    e.preventDefault();
+    var m = $("#form-msg");
+    var title = $("#f-title").value.trim();
+    if (!title) return;
+    if (!formPlats.length) { m.textContent = "Pick at least one platform."; return; }
+    var iv = function(v){ var n = parseInt(v, 10); return isNaN(n) || n < 0 ? 0 : n; };
+    var stamp = Date.now().toString(36);
+    formPlats.forEach(function(p, i){
+      var v = formNums[p] || {};
+      state.posts.push({
+        id: "p" + stamp + i + Math.random().toString(36).slice(2, 5),
+        title: title, type: $("#f-type").value, platform: p, date: $("#f-date").value || today,
+        views: iv(v.views), likes: iv(v.likes), comments: iv(v.comments), shares: iv(v.shares),
+        note: $("#f-note").value.trim()
+      });
+    });
+    $("#f-title").value = ""; $("#f-note").value = ""; formNums = {};
+    persist(); render(); renderForm();
+    m.textContent = "Saved on " + formPlats.length + " platform" + (formPlats.length > 1 ? "s" : "") + ". Well done for posting.";
+    setTimeout(function(){ m.textContent = ""; }, 5000);
+  });
+
+  function netState(){ $("#net").hidden = navigator.onLine !== false; }
+  window.addEventListener("online", function(){ netState(); persist(); });
+  window.addEventListener("offline", netState);
+
+  async function init(){
+    fillSelect("#f-type", TYPES);
+    $("#f-date").value = today;
+    try {
+      var raw = localStorage.getItem(LS);
+      if (raw) state = normalize(JSON.parse(raw));
+    } catch(e){}
+    renderGuides(); renderForm(); setNote(); netState(); render(); syncForm();
+    try {
+      var c = window.claude;
+      if (!c || !c.use) return;
+      var u = await c.use("user");
+      var uid = u ? await u.id() : null;
+      var db = await c.use("db");
+      if (!db || !uid) return;
+      var ref = db.doc("data/users/" + uid + "/tracker");
+      saver = function(d){ return ref.set(d); };
+      ref.onSnapshot(function(s){
+        if (s.metadata.hasPendingWrites || s.metadata.fromCache || inflight > 0) return;
+        if (s.exists) {
+          var remote = normalize(s.data());
+          if (remote.updatedAt > state.updatedAt || (isEmpty(state) && !isEmpty(remote))) { state = remote; render(); }
+          else if (state.updatedAt > remote.updatedAt) { persist(); }
+        } else if (!isEmpty(state)) { persist(); }
+      }, function(){ saver = null; });
+    } catch(e){ saver = null; }
+  }
+  init();
+})();
+</script>
+<script>
+if ("serviceWorker" in navigator) { window.addEventListener("load", function(){ navigator.serviceWorker.register("angela-sw.js").catch(function(){}); }); }
+</script>
+</body>
+</html>

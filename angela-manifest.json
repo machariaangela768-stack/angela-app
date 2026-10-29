@@ -1,0 +1,16 @@
+{
+  "name": "Angela's Content Tracker",
+  "short_name": "Angela",
+  "description": "Plan, film and post content, and track how it does",
+  "start_url": "./angela.html",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#150C14",
+  "theme_color": "#150C14",
+  "icons": [
+    {"src": "angela-icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any"},
+    {"src": "angela-icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any"},
+    {"src": "angela-icon-maskable-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable"}
+  ]
+}
